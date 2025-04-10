@@ -16,7 +16,7 @@
     program shen2
     parameter(m=20,n=16,d=300000.0,cla=51.0,clo=118.0,dt=600.0)
     dimension ua(m,n),va(m,n),za(m,n),ub(m,n),vb(m,n),zb(m,n),    &
-     		uc(m,n),vc(m,n),zc(m,n),rm(m,n),f(m,n),w(m,n)
+            uc(m,n),vc(m,n),zc(m,n),rm(m,n),f(m,n),w(m,n)
     integer*4 access,status
     zo=2500.0
     s=0.5
@@ -300,24 +300,50 @@
 !************************需要进行编写************************！
 !   space smoothing for internal points 区域内5点平滑(正逆平滑)
 !   可选做正逆平滑或正平滑   l=1为只执行正平滑，l=2为执行正逆平滑.
+!   五点平滑子程序
     subroutine ssip(a,w,s,m,n,l)
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+        dimension a(m,n),w(m,n)
+        if(l==1) then !执行正平滑
+            !正平滑
+            do i=2,m-1
+                do j=2,n-1
+                    w(i,j)=a(i,j)+0.25*s*(a(i+1,j)+a(i-1,j)+&
+                                        a(i,j+1)+a(i,j-1)-4.0*a(i,j))
+                end do
+            end do
+            do i=2,m-1
+                do j=2,n-1
+                    a(i,j)=w(i,j)
+                end do
+            end do
+        else if(l==2) then !执行正逆平滑
+            !正平滑
+            do i=2,m-1
+                do j=2,n-1
+                    w(i,j)=a(i,j)+0.25*s*(a(i+1,j)+a(i-1,j)+&
+                                        a(i,j+1)+a(i,j-1)-4.0*a(i,j))
+                end do
+            end do
+            do i=2,m-1
+                do j=2,n-1
+                    a(i,j)=w(i,j)
+                end do
+            end do
+            !逆平滑
+            do i=2,m-1
+                do j=2,n-1
+                    w(i,j)=a(i,j)-0.25*s*(a(i+1,j)+a(i-1,j)+&
+                                        a(i,j+1)+a(i,j-1)-4.0*a(i,j))
+                end do
+            end do
+        end if
+        do i=2,m-1
+            do j=2,n-1
+                a(i,j)=w(i,j)
+            end do
+        end do
+        return  
+        end
 !************************************************************！
     
 !   time smoothimg
